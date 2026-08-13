@@ -1,0 +1,62 @@
+[package]
+name = "vietzip_core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+zip = { version = "8", default-features = false, features = ["deflate", "aes-crypto"] }
+thiserror = "1"
+walkdir = "2"
+tar = "0.4"
+flate2 = "1"
+bzip2 = "0.5"
+zstd = "0.13"
+# 0.21 (không còn "0.7") — 0.17.0 thêm nén LZMA2 đa luồng thật (Lzma2Options::from_level_mt,
+# xem sevenz_format.rs), 0.21.1 vá lỗi path-traversal khi giải nén, 0.21.3/0.21.4 chống
+# panic/vòng lặp vô hạn/cấp phát bộ nhớ không giới hạn từ archive độc hại — nâng cấp vừa là
+# tính năng vừa là vá bảo mật. Cũng gộp về cùng 1 bản với sevenz-rust2 mà unarc-rs kéo theo
+# transitively (trước đây 2 bản major khác nhau cùng tồn tại, xem CLAUDE.md mục ARJ).
+sevenz-rust2 = { version = "0.21", features = ["aes256"] }
+unrar-ng = "0.7"
+tempfile = "3"
+crc32fast = "1"
+sha2 = "0.10"
+lzma-rs = "0.3"
+cab = "0.6"
+ar = "0.9"
+cpio = "0.4"
+# Loại `xz-compression` (dùng crate `liblzma`, FFI ràng buộc C) khỏi feature set — giữ đúng
+# nguyên tắc đã chọn ở single_format.rs (ưu tiên codec pure-Rust, tránh lặp lại rủi ro
+# cross-compile Android như unrar-ng-sys). Đổi lại: .rpm nén payload bằng XZ (phổ biến ở
+# openSUSE/1 số bản Fedora) sẽ báo lỗi khi giải nén — đánh đổi có chủ đích, ghi rõ trong
+# rpm_format.rs. `bzip2` đã là dependency có sẵn (FFI, nhưng đã được chấp nhận từ trước cho
+# .tar.bz2 và đã cross-compile Android thành công), dùng lại không phát sinh rủi ro mới.
+rpm = { version = "0.27", default-features = false, features = ["payload", "gzip-compression", "zstd-compression", "bzip2-compression"] }
+# .lzh/.lha — chỉ giải nén, xem lzh_format.rs. Pure Rust, MIT/Apache-2.0, ~108K lượt tải,
+# hoạt động liên tục từ 2020, xem CLAUDE.md mục "Broader extract-only format coverage".
+delharc = "0.8"
+# ext2/ext4 dạng file ảnh độc lập (không phải container đĩa ảo) — chỉ đọc, xem ext_format.rs.
+# Pure Rust, MIT/Apache-2.0, không unsafe ở crate chính, ~48.6K lượt tải.
+ext4-view = { version = "0.9", features = ["std"] }
+# .arj — chỉ giải nén, xem arj_format.rs. Pure Rust, MIT/Apache-2.0, xem CLAUDE.md mục
+# "Broader extract-only format coverage" cho đánh giá rủi ro chi tiết (crate gộp nhiều định
+# dạng retro trong 1 gói — chỉ dùng phần API đọc ARJ, không phải lý do để tin toàn bộ crate).
+unarc-rs = "0.6"
+# NSIS installer .exe — chỉ giải nén, xem nsis_format.rs. Apache-2.0, pure Rust, dependency
+# tái dùng flate2/lzma-rs đã có sẵn.
+nsis = "0.3"
+# .chm (Microsoft Compiled HTML Help) — chỉ giải nén, xem chm_format.rs. MIT, pure Rust,
+# dependency tối giản (bitflags/thiserror). Crate rất mới, chưa có test/fixture nào ở
+# thượng nguồn — xem CLAUDE.md cho đánh giá rủi ro.
+libchm = "0.2"
+# .udf — chỉ giải nén, xem udf_format.rs. MIT, pure Rust, không FFI, dependency chỉ gồm các
+# crate "hadris-*" cùng hệ (bitflags/bytemuck/spin/thiserror) — phát triển liên tục từ
+# 11/2024, bản 2.0.0 tại thời điểm thêm (2026-08-13). Xem CLAUDE.md mục "Broader extract-only
+# format coverage" cho lịch sử 3 lần điều tra trước khi crate này đủ chín để dùng.
+hadris-udf = "2"
+# Chỉ dùng trong test của udf_format.rs — dựng fixture UDF hợp lệ bằng cách xây thẳng struct
+# thật của hadris-udf rồi lấy byte qua bytemuck::bytes_of (thay vì tự đoán offset), đảm bảo
+# khớp tuyệt đối với cách chính crate đó đọc lại. Đã có sẵn trong cây dependency (qua
+# hadris-udf) — khai báo trực tiếp để gọi được trong code của dự án.
+bytemuck = "1"

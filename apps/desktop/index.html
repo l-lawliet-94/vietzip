@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vietzip</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+
+  <body>
+    <!-- FR-33/34 tối giản: chỉ 1 lớp phủ toàn màn hình hiện khi đang kéo file từ ngoài vào,
+         không có nút/tuỳ chọn gì thêm — hành vi được quyết định sẵn (xem main.ts::onFilesDropped)
+         nên không cần hỏi người dùng bất cứ điều gì khi thả ra. -->
+    <div id="drop-overlay" class="drop-overlay hidden" aria-hidden="true">
+      <p data-i18n="dropzone.hint">Thả vào đây để nén — hoặc thả 1 file nén để xem nội dung</p>
+    </div>
+
+    <main class="container">
+      <header class="app-header">
+        <h1 data-i18n="app.title">Vietzip</h1>
+        <div class="header-actions">
+          <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
+            <button id="lang-vi" class="lang-btn" type="button">VI</button>
+            <button id="lang-en" class="lang-btn" type="button">EN</button>
+          </div>
+          <button id="btn-about" class="lang-btn" type="button" data-i18n="about.button">Giới thiệu</button>
+        </div>
+      </header>
+
+      <dialog id="about-dialog">
+        <h2 id="about-name">Vietzip</h2>
+        <p id="about-version"></p>
+        <p id="about-license"></p>
+        <h3 data-i18n="about.thirdPartyTitle">Giấy phép bên thứ ba</h3>
+        <pre id="about-third-party" class="about-licenses"></pre>
+        <button id="btn-about-close" class="btn-secondary" data-i18n="about.close">Đóng</button>
+      </dialog>
+
+      <!-- Trạng thái luôn hiện ngay dưới tiêu đề, không phải cuối trang — người dùng
+           thấy ngay app đang làm gì mà không cần cuộn xuống. -->
+      <p id="status" class="status status-idle" role="status">
+        <span id="status-icon" class="status-icon" aria-hidden="true"></span>
+        <span id="status-text" data-i18n="status.idle">Sẵn sàng.</span>
+      </p>
+
+      <section class="section">
+        <h2 class="section-title" data-i18n="section.mainActions">Thao tác chính</h2>
+        <div class="action-grid">
+          <button id="btn-compress" class="btn-action" type="button">
+            <span class="btn-action-icon" aria-hidden="true">📦</span>
+            <span data-i18n="toolbar.compress">Nén file...</span>
+          </button>
+          <button id="btn-compress-folder" class="btn-action" type="button">
+            <span class="btn-action-icon" aria-hidden="true">🗂️</span>
+            <span data-i18n="toolbar.compressFolder">Nén thư mục...</span>
+          </button>
+          <button id="btn-extract" class="btn-action" type="button">
+            <span class="btn-action-icon" aria-hidden="true">📂</span>
+            <span data-i18n="toolbar.extract">Giải nén...</span>
+          </button>
+          <button id="btn-test" class="btn-action" type="button">
+            <span class="btn-action-icon" aria-hidden="true">🔍</span>
+            <span data-i18n="toolbar.test">Kiểm tra...</span>
+          </button>
+          <button id="btn-view" class="btn-action" type="button">
+            <span class="btn-action-icon" aria-hidden="true">👁️</span>
+            <span data-i18n="toolbar.view">Xem...</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title" data-i18n="section.options">Tuỳ chọn nén / giải nén</h2>
+        <p class="section-hint" data-i18n="section.optionsHint">
+          Áp dụng cho thao tác Nén và Giải nén ở trên.
+        </p>
+
+        <div class="field-row">
+          <label for="password" data-i18n="password.label">Mật khẩu (không bắt buộc):</label>
+          <input id="password" type="password" data-i18n-placeholder="password.placeholder" />
+        </div>
+
+        <div class="field-row">
+          <label for="level" data-i18n="level.label">Mức nén (chỉ áp dụng khi nén):</label>
+          <select id="level">
+            <option value="fast" data-i18n="level.fast">Nhanh</option>
+            <option value="normal" selected data-i18n="level.normal">Cân bằng</option>
+            <option value="ultra" data-i18n="level.ultra">Tối đa</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- FR-04/FR-07, tuỳ chọn nâng cao — thu gọn bằng <details> gốc của trình duyệt
+           (không cần thêm JS quản lý trạng thái mở/đóng) để không choán chỗ màn hình
+           chính, đúng nguyên tắc tối giản (FR-33/FR-34). -->
+      <details class="section section-collapsible">
+        <summary class="section-title" data-i18n="section.advanced">Tuỳ chọn nâng cao</summary>
+        <p class="section-hint" data-i18n="section.advancedHint">
+          Chia nhỏ file để gửi qua email/USB, ghép lại, hoặc tạo file .exe tự giải nén.
+        </p>
+
+        <div class="field-row">
+          <button id="btn-split" class="btn-secondary" data-i18n="advanced.split">Chia nhỏ file...</button>
+          <input
+            id="split-size-mb"
+            type="number"
+            min="1"
+            value="100"
+            class="size-input"
+            data-i18n-aria-label="advanced.splitSizeLabel"
+          />
+          <span data-i18n="advanced.mb">MB/phần</span>
+        </div>
+        <div class="field-row">
+          <button id="btn-join" class="btn-secondary" data-i18n="advanced.join">Ghép file đã chia...</button>
+        </div>
+        <div class="field-row">
+          <button id="btn-sfx" class="btn-secondary" data-i18n="advanced.sfx">Tạo file tự giải nén (.exe)...</button>
+          <input
+            id="sfx-run-after"
+            type="text"
+            data-i18n-placeholder="advanced.sfxRunAfterPlaceholder"
+          />
+        </div>
+        <div class="field-row">
+          <button id="btn-benchmark" class="btn-secondary" data-i18n="advanced.benchmark">Đo tốc độ máy này...</button>
+        </div>
+        <table id="benchmark-results" class="hidden">
+          <thead>
+            <tr>
+              <th></th>
+              <th data-i18n="benchmark.compress">Nén</th>
+              <th data-i18n="benchmark.decompress">Giải nén</th>
+              <th data-i18n="benchmark.ratio">Còn lại</th>
+            </tr>
+          </thead>
+          <tbody id="benchmark-results-body"></tbody>
+        </table>
+        <div class="field-row">
+          <button id="btn-checksum" class="btn-secondary" data-i18n="advanced.checksum">Tính checksum file...</button>
+        </div>
+        <p id="checksum-result" class="section-hint hidden"></p>
+        <div class="field-row">
+          <button id="btn-convert" class="btn-secondary" data-i18n="advanced.convert">Chuyển đổi định dạng...</button>
+        </div>
+        <div class="field-row">
+          <button id="btn-repair" class="btn-secondary" data-i18n="advanced.repair">Sửa file nén bị lỗi...</button>
+        </div>
+        <p id="repair-result" class="section-hint hidden"></p>
+      </details>
+
+      <section class="section">
+        <h2 class="section-title" data-i18n="section.results">Nội dung file nén</h2>
+        <p id="results-viewing" class="section-hint hidden"></p>
+        <div id="results-breadcrumb" class="breadcrumb"></div>
+
+        <table id="entries-table" class="hidden">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th data-i18n="table.name">Tên</th>
+              <th data-i18n="table.size">Kích thước</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="entries-body"></tbody>
+        </table>
+        <p id="entries-empty" class="entries-empty" data-i18n="table.empty">
+          Chưa có file nào được chọn. Nhấn "Xem..." để xem trước nội dung 1 file nén.
+        </p>
+
+        <!-- FR-18/19, chỉ hiện sau khi đã "Xem..." 1 file .zip — sửa trực tiếp bên trong
+             archive (thêm/xoá entry) mà không cần giải nén ra rồi nén lại từ đầu. Chỉ hỗ
+             trợ .zip (xem zip_format.rs::add_entries/remove_entries). -->
+        <button id="btn-add-to-archive" class="btn-secondary hidden" data-i18n="manage.addFiles">
+          Thêm file vào archive này...
+        </button>
+      </section>
+    </main>
+  </body>
+</html>

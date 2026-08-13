@@ -1,0 +1,102 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Vietzip",
+  "version": "0.1.0",
+  "identifier": "com.vietzip.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "cargo build --release -p vietzip-sfx-stub -p vietzip -p vietzip-shell-menu && npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Vietzip",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "../../../LICENSES.md": "THIRD-PARTY-LICENSES.md",
+      "../../../target/release/vietzip.*": "",
+      "../../../target/release/sfx-stub.*": "",
+      "../../../target/release/vietzip_shell_menu.*": ""
+    },
+    "windows": {
+      "wix": {
+        "fragmentPaths": ["windows/shell-context-menu.wxs"],
+        "componentGroupRefs": ["VietzipShellContextMenu"]
+      }
+    },
+    "linux": {
+      "deb": {
+        "recommends": ["python3-nautilus"],
+        "postInstallScript": "linux/postinst.sh",
+        "files": {
+          "usr/bin/vietzip": "../../../target/debug/vietzip",
+          "usr/share/nautilus-python/extensions/vietzip-nautilus.py": "linux/vietzip-nautilus.py"
+        }
+      }
+    },
+    "fileAssociations": [
+      {
+        "ext": ["zip"],
+        "name": "ZIP Archive",
+        "description": "ZIP Archive",
+        "mimeType": "application/zip",
+        "role": "Editor"
+      },
+      {
+        "ext": ["7z"],
+        "name": "7-Zip Archive",
+        "description": "7-Zip Archive",
+        "mimeType": "application/x-7z-compressed",
+        "role": "Editor"
+      },
+      {
+        "ext": ["rar"],
+        "name": "RAR Archive",
+        "description": "RAR Archive (extract only)",
+        "mimeType": "application/vnd.rar",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["tar"],
+        "name": "TAR Archive",
+        "description": "TAR Archive (extract only)",
+        "mimeType": "application/x-tar",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["tgz"],
+        "name": "Gzip-compressed TAR Archive",
+        "description": "Gzip-compressed TAR Archive (extract only)",
+        "mimeType": "application/gzip",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["tbz2"],
+        "name": "Bzip2-compressed TAR Archive",
+        "description": "Bzip2-compressed TAR Archive (extract only)",
+        "mimeType": "application/x-bzip2",
+        "role": "Viewer"
+      }
+    ]
+  }
+}

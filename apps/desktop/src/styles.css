@@ -1,0 +1,509 @@
+:root {
+  --accent: #396cd8;
+  --accent-strong: #2c56b3;
+  --success: #1f8a4c;
+  --success-bg: rgba(31, 138, 76, 0.12);
+  --error: #c0392b;
+  --error-bg: rgba(192, 57, 43, 0.12);
+  --idle-bg: rgba(15, 15, 15, 0.05);
+  --card-bg: #ffffff;
+  --card-border: rgba(15, 15, 15, 0.08);
+  --muted: rgba(15, 15, 15, 0.6);
+
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0f;
+  background-color: #f0f1f5;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  margin: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 720px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.4em;
+  font-weight: 700;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-btn {
+  padding: 0.3em 0.7em;
+  font-size: 0.85em;
+  font-weight: 600;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.lang-btn.active {
+  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+dialog {
+  border: none;
+  border-radius: 12px;
+  padding: 20px 24px;
+  max-width: min(520px, 90vw);
+  width: 100%;
+  color: inherit;
+  background-color: var(--card-bg);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+dialog h2 {
+  margin: 0 0 4px;
+}
+
+dialog h3 {
+  margin: 16px 0 6px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+dialog p {
+  margin: 2px 0;
+  font-size: 0.9em;
+  color: var(--muted);
+}
+
+.about-licenses {
+  max-height: 240px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8em;
+  background-color: var(--idle-bg);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+}
+
+/* Khối nội dung dạng thẻ — tạo ranh giới rõ ràng giữa các nhóm chức năng để người dùng
+   không phải đoán phần nào liên quan tới phần nào (bố cục + rõ ràng nội dung). */
+.section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 0.78em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  cursor: default;
+}
+
+.section-hint {
+  margin: -4px 0 2px;
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+.section-collapsible > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.section-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+.section-collapsible > summary::before {
+  content: "▸ ";
+}
+.section-collapsible[open] > summary::before {
+  content: "▾ ";
+}
+.section-collapsible[open] {
+  gap: 12px;
+}
+
+input,
+select,
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f0f0f;
+  background-color: #ffffff;
+  transition: border-color 0.15s, opacity 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  outline: none;
+}
+
+input,
+select {
+  border: 1px solid var(--card-border);
+  box-shadow: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+button:active {
+  border-color: var(--accent);
+  background-color: #e8e8e8;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  border-color: transparent;
+}
+
+/* Lưới 4 nút thao tác chính — kích thước bằng nhau, có icon để phân biệt nhanh bằng mắt,
+   thay cho hàng nút dàn ngang trước đây dễ nhầm cái nào là hành động chính. */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.btn-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0.9em 0.6em;
+  font-size: 0.95em;
+  font-weight: 600;
+  background-color: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+}
+.btn-action:hover {
+  background-color: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+.btn-action:active {
+  background-color: var(--accent-strong);
+}
+
+.btn-action-icon {
+  font-size: 1.4em;
+  line-height: 1;
+}
+
+.btn-secondary {
+  font-size: 0.9em;
+  font-weight: 500;
+  background-color: transparent;
+  border: 1px solid var(--card-border);
+  color: inherit;
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.9em;
+}
+
+.field-row label {
+  flex: 1 1 100%;
+}
+
+.field-row input[type="password"] {
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+.size-input {
+  width: 4.5em;
+  padding: 0.4em 0.5em;
+}
+
+.btn-remove-entry {
+  border: none;
+  box-shadow: none;
+  background: none;
+  padding: 0.1em 0.4em;
+  font-size: 0.8em;
+  color: var(--error);
+  opacity: 0.7;
+}
+
+.btn-remove-entry:hover {
+  opacity: 1;
+  border-color: transparent;
+}
+
+.btn-rename-entry {
+  border: none;
+  box-shadow: none;
+  background: none;
+  padding: 0.1em 0.4em;
+  font-size: 0.8em;
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.btn-rename-entry:hover {
+  opacity: 1;
+  border-color: transparent;
+}
+
+/* Điều hướng thư mục bên trong file nén — breadcrumb dạng "/ src / sub", mỗi đoạn bấm
+   được để nhảy thẳng tới cấp đó, giống thanh địa chỉ 1 file manager thu nhỏ. */
+.breadcrumb {
+  font-size: 0.85em;
+  color: var(--muted);
+  margin: -4px 0 4px;
+}
+
+.breadcrumb:empty {
+  display: none;
+}
+
+.breadcrumb-link {
+  border: none;
+  box-shadow: none;
+  background: none;
+  padding: 0;
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.entry-row-folder {
+  cursor: pointer;
+}
+
+.entry-row-folder:hover {
+  background-color: rgba(57, 108, 216, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+th {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+tbody tr:hover {
+  background-color: rgba(57, 108, 216, 0.08);
+}
+
+/* Gợi ý bằng con trỏ chuột: dòng file kéo được ra ngoài (xem main.ts::onEntryDragStart). */
+.entry-row-file {
+  cursor: grab;
+}
+.entry-row-file:active {
+  cursor: grabbing;
+}
+
+.entries-empty {
+  font-size: 0.9em;
+  opacity: 0.65;
+  font-style: italic;
+  margin: 4px 0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Lớp phủ toàn màn hình khi kéo file từ ngoài (Explorer/Finder/Nautilus) vào cửa sổ ứng
+   dụng — cho thấy ngay lập tức "thả vào đây sẽ làm gì" thay vì người dùng phải đoán. */
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  background-color: rgba(57, 108, 216, 0.16);
+  backdrop-filter: blur(1px);
+  border: 3px dashed var(--accent);
+  pointer-events: none;
+}
+
+/* `.hidden` và `.drop-overlay` có cùng độ đặc hiệu CSS (1 class) — vì `.drop-overlay` khai
+   báo `display: flex` sau `.hidden` trong file này, nó thắng theo thứ tự khai báo, khiến
+   overlay không bao giờ thực sự ẩn được dù có class `hidden` (lỗi thật đã xác nhận bằng cách
+   render thử: overlay luôn hiển thị, không chỉ lúc kéo file vào). Selector 2-class này có độ
+   đặc hiệu cao hơn cả hai, thắng bất kể thứ tự khai báo. */
+.drop-overlay.hidden {
+  display: none;
+}
+
+.drop-overlay p {
+  margin: 0;
+  padding: 14px 22px;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--accent-strong);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Thanh trạng thái — 4 trạng thái rõ ràng (sẵn sàng / đang xử lý / thành công / lỗi),
+   phân biệt bằng cả icon lẫn màu nền, không chỉ đổi màu chữ như trước — tránh người dùng
+   phải đoán app có đang làm gì hay không. */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.92em;
+  background-color: var(--idle-bg);
+  color: inherit;
+}
+
+.status-icon {
+  display: inline-flex;
+  width: 1.1em;
+  flex-shrink: 0;
+}
+
+.status-loading {
+  background-color: rgba(57, 108, 216, 0.12);
+  color: var(--accent-strong);
+}
+.status-loading .status-icon::before {
+  content: "";
+  display: block;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: status-spin 0.7s linear infinite;
+}
+
+.status-success {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+.status-success .status-icon::before {
+  content: "✓";
+}
+
+.status-error {
+  background-color: var(--error-bg);
+  color: var(--error);
+}
+.status-error .status-icon::before {
+  content: "✕";
+}
+
+@keyframes status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-bg: #2a2a2e;
+    --card-border: rgba(255, 255, 255, 0.1);
+    --muted: rgba(255, 255, 255, 0.55);
+    --idle-bg: rgba(255, 255, 255, 0.06);
+    --success-bg: rgba(48, 191, 113, 0.16);
+    --success: #4ade80;
+    --error-bg: rgba(255, 107, 91, 0.16);
+    --error: #ff6b5b;
+
+    color: #f6f6f6;
+    background-color: #202127;
+  }
+
+  input,
+  select,
+  button {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+  button:active {
+    background-color: #0f0f0f69;
+  }
+
+  .btn-action {
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+  .btn-action:hover {
+    background-color: var(--accent-strong);
+  }
+
+  tbody tr:hover {
+    background-color: rgba(97, 148, 255, 0.12);
+  }
+}

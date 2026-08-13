@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "build": {
+    "beforeBuildCommand": "cargo build --release --target i686-pc-windows-msvc -p vietzip-sfx-stub -p vietzip -p vietzip-shell-menu && npm run build"
+  },
+  "bundle": {
+    "resources": {
+      "../../../target/release/vietzip.*": null,
+      "../../../target/release/sfx-stub.*": null,
+      "../../../target/release/vietzip_shell_menu.*": null,
+      "../../../target/i686-pc-windows-msvc/release/vietzip.*": "",
+      "../../../target/i686-pc-windows-msvc/release/sfx-stub.*": "",
+      "../../../target/i686-pc-windows-msvc/release/vietzip_shell_menu.*": ""
+    }
+  }
+}

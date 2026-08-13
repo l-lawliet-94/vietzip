@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<!--
+  FR-22: menu ngữ cảnh Explorer (right-click) — "Compress to [name].zip", "Extract Here",
+  "Extract to <name>\". Chỉ 3 hành động phẳng, đúng giới hạn NFR-11 ban đầu (không lồng
+  submenu sâu) — verb tĩnh (đăng ký registry thường, nhãn menu là văn bản cố định) vẫn giữ
+  nguyên bên dưới, không xoá — làm phương án dự phòng nếu COM handler (dưới) gặp vấn đề chưa
+  lường trước; 2 cơ chế không xung đột, người dùng thấy cả verb tĩnh lẫn menu con "Vietzip".
+
+  2026-08-12: bổ sung COM shell extension thật (`crates/shell-menu`, `vietzip_shell_menu.dll`)
+  cho ĐÚNG nhu cầu nhãn menu động (vd "Giải nén vào Ảnh\" dùng tên file thật) — trước đây bị
+  coi là quá rủi ro để làm (lỗi COM có thể ảnh hưởng ổn định Explorer, không chỉ 1 archive),
+  đảo ngược quyết định đó theo yêu cầu rõ ràng của người dùng sau khi đã nêu rõ rủi ro. Dùng
+  `windows-rs` (binding chính thức Microsoft, không tự viết FFI tay) + panic-safety
+  (`catch_unwind` ở mọi phương thức COM) — xem doc comment đầu `crates/shell-menu/src/lib.rs`
+  để biết đầy đủ mức độ đã kiểm chứng và giới hạn còn lại (không có Explorer thật để test
+  tương tác trong môi trường phát triển này).
+
+  2026-08-12 (tiếp): theo yêu cầu rõ ràng của người dùng, đảo ngược tiếp phần "không lồng
+  submenu" của NFR-11 — CHỈ cho menu COM động này (verb tĩnh ở trên vẫn giữ phẳng, không đổi).
+  `QueryContextMenu` giờ dựng 1 mục cha "Vietzip" xổ ra submenu 5 mục con (Xem nội dung/Giải
+  nén tại đây/Giải nén vào "Tên"/Kiểm tra/Thêm vào archive), giống đúng cách 7-Zip trình bày
+  menu chuột phải của chính nó. Registry ở dưới KHÔNG cần đổi gì cho việc này — cấu trúc
+  submenu hoàn toàn được dựng động lúc chạy bên trong `QueryContextMenu`, WiX chỉ cần đăng ký
+  đúng 1 CLSID handler như cũ.
+
+  Toàn bộ giá trị Value/Text trong file này phải là ASCII thuần (không dấu tiếng Việt) — WiX
+  build bằng codepage 1252, ký tự ngoài Latin-1 làm build lỗi LGHT0311 (đã gặp lỗi này 1 lần
+  khi làm FR-23, xem CLAUDE.md).
+
+  Chỉ đăng ký được nếu `vietzip.exe` (CLI) đã được đóng gói vào INSTALLDIR — xem
+  `bundle.resources` trong tauri.conf.json.
+
+  2026-08-13: KHÔNG còn hardcode Win64="yes" — dự án giờ build cả x64 lẫn x86 (32-bit, theo yêu
+  cầu người dùng). File fragment này vẫn được candle.exe biên dịch RIÊNG (không cùng lượt với
+  main.wxs), nên biến `$(var.Win64)` mà main.wxs tự `<?define?>` KHÔNG có hiệu lực ở đây — thay
+  vào đó tự định nghĩa lại `Win64Value` trong chính file này bằng `$(sys.BUILDARCH)`, một biến
+  dựng sẵn của WiX gắn với TỪNG LƯỢT GỌI candle.exe (không phải theo file), nên vẫn đúng dù
+  fragment này được biên dịch tách biệt — cùng kỹ thuật `main.wxs` do tauri-bundler tự sinh ra
+  đã dùng (đối chiếu trực tiếp `target/i686-pc-windows-msvc/release/wix/x86/main.wxs` thật để
+  xác nhận, không đoán).
+-->
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <?if $(sys.BUILDARCH)="x86"?>
+    <?define Win64Value = "no" ?>
+  <?elseif $(sys.BUILDARCH)="x64"?>
+    <?define Win64Value = "yes" ?>
+  <?elseif $(sys.BUILDARCH)="arm64"?>
+    <?define Win64Value = "yes" ?>
+  <?else?>
+    <?error Unsupported value of sys.BUILDARCH=$(sys.BUILDARCH)?>
+  <?endif?>
+  <Fragment>
+    <ComponentGroup Id="VietzipShellContextMenu" Directory="INSTALLDIR">
+
+      <!-- "Compress to [name].zip" trên bất kỳ file nào -->
+      <Component Id="CompressOnFile" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="*\shell\VietzipCompress">
+          <RegistryValue Type="string" Value="Compress to .zip" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; compress &quot;%1&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <!-- "Compress to [name].zip" khi right-click thẳng vào 1 thư mục -->
+      <Component Id="CompressOnFolder" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="Directory\shell\VietzipCompress">
+          <RegistryValue Type="string" Value="Compress to .zip" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; compress &quot;%1&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <!-- "Compress this folder to .zip" khi right-click khoảng trống bên trong 1 thư mục -->
+      <Component Id="CompressOnFolderBackground" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="Directory\Background\shell\VietzipCompress">
+          <RegistryValue Type="string" Value="Compress this folder to .zip" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; compress &quot;%V&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <!-- Extract Here / Extract to subfolder — lặp lại cho từng đuôi mở rộng đã đăng ký
+           ở fileAssociations (tauri.conf.json): zip, 7z, rar, tar, tgz, tbz2. -->
+
+      <Component Id="ExtractHereZip" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.zip\shell\VietzipExtractHere">
+          <RegistryValue Type="string" Value="Extract Here" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --here" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ExtractSubZip" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.zip\shell\VietzipExtractSub">
+          <RegistryValue Type="string" Value="Extract to subfolder" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --to-subfolder" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <Component Id="ExtractHereSevenZ" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.7z\shell\VietzipExtractHere">
+          <RegistryValue Type="string" Value="Extract Here" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --here" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ExtractSubSevenZ" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.7z\shell\VietzipExtractSub">
+          <RegistryValue Type="string" Value="Extract to subfolder" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --to-subfolder" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <Component Id="ExtractHereRar" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.rar\shell\VietzipExtractHere">
+          <RegistryValue Type="string" Value="Extract Here" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --here" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ExtractSubRar" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.rar\shell\VietzipExtractSub">
+          <RegistryValue Type="string" Value="Extract to subfolder" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --to-subfolder" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <Component Id="ExtractHereTar" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tar\shell\VietzipExtractHere">
+          <RegistryValue Type="string" Value="Extract Here" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --here" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ExtractSubTar" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tar\shell\VietzipExtractSub">
+          <RegistryValue Type="string" Value="Extract to subfolder" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --to-subfolder" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <Component Id="ExtractHereTgz" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tgz\shell\VietzipExtractHere">
+          <RegistryValue Type="string" Value="Extract Here" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --here" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ExtractSubTgz" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tgz\shell\VietzipExtractSub">
+          <RegistryValue Type="string" Value="Extract to subfolder" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --to-subfolder" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <Component Id="ExtractHereTbz2" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tbz2\shell\VietzipExtractHere">
+          <RegistryValue Type="string" Value="Extract Here" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --here" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ExtractSubTbz2" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tbz2\shell\VietzipExtractSub">
+          <RegistryValue Type="string" Value="Extract to subfolder" KeyPath="yes" />
+          <RegistryKey Key="command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]vietzip.exe&quot; extract &quot;%1&quot; --to-subfolder" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <!-- COM shell extension thật — nhãn menu ĐỘNG (vd "Giải nén vào Ảnh\"), xem
+           crates/shell-menu. CLSID sinh 1 lần bằng [guid]::NewGuid() (PowerShell) — PHẢI
+           khớp đúng hằng số CLSID_VIETZIP_CONTEXT_MENU trong crates/shell-menu/src/lib.rs,
+           không được đổi độc lập ở 1 trong 2 chỗ. -->
+      <Component Id="ShellMenuClsid" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="CLSID\{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}">
+          <RegistryValue Type="string" Value="Vietzip Context Menu Handler" KeyPath="yes" />
+          <RegistryKey Key="InprocServer32">
+            <RegistryValue Type="string" Value="[INSTALLDIR]vietzip_shell_menu.dll" />
+            <RegistryValue Type="string" Name="ThreadingModel" Value="Apartment" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <!-- Đăng ký handler cho đúng cùng tập đuôi mở rộng mà verb tĩnh ở trên đã hỗ trợ. Mỗi
+           đuôi 1 Component riêng (khớp cấu trúc ExtractHere*/ExtractSub* ở trên) để WiX quản
+           lý cài đặt/gỡ cài đặt độc lập từng key, không gộp chung 1 Component nhiều key. -->
+      <Component Id="ShellMenuHandlerZip" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.zip\ShellEx\ContextMenuHandlers\Vietzip">
+          <RegistryValue Type="string" Value="{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+      <Component Id="ShellMenuHandlerSevenZ" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.7z\ShellEx\ContextMenuHandlers\Vietzip">
+          <RegistryValue Type="string" Value="{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+      <Component Id="ShellMenuHandlerRar" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.rar\ShellEx\ContextMenuHandlers\Vietzip">
+          <RegistryValue Type="string" Value="{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+      <Component Id="ShellMenuHandlerTar" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tar\ShellEx\ContextMenuHandlers\Vietzip">
+          <RegistryValue Type="string" Value="{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+      <Component Id="ShellMenuHandlerTgz" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tgz\ShellEx\ContextMenuHandlers\Vietzip">
+          <RegistryValue Type="string" Value="{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+      <Component Id="ShellMenuHandlerTbz2" Guid="*" Win64="$(var.Win64Value)">
+        <RegistryKey Root="HKCR" Key="SystemFileAssociations\.tbz2\ShellEx\ContextMenuHandlers\Vietzip">
+          <RegistryValue Type="string" Value="{E8C419D0-B877-4F44-A4D0-8A1D17D81E20}" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+</Wix>

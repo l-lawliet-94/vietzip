@@ -1,0 +1,32 @@
+[workspace]
+resolver = "2"
+members = ["crates/core", "crates/cli", "crates/sfx-stub", "crates/shell-menu", "apps/desktop/src-tauri", "apps/mobile/rust"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[profile.release]
+lto = true
+strip = true
+
+# unrar-ng-sys 0.7.7's build.rs uses host-cfg (cfg!(windows)) instead of the
+# target triple to decide which Windows-only vendored .cpp files to compile,
+# which breaks cross-compiling to Android from this Windows dev machine.
+# Patched locally in vendor/unrar-ng-sys (3-line fix, same license/vendor
+# source, see LICENSES.md) until upstream fixes it.
+#
+# unrar-ng-sys + unrar-ng 0.7.7 both declared the RARDLL C API as `extern "C"` (cdecl), but
+# `vendor/unrar/dll.hpp` declares it `PASCAL` (`__stdcall` on real Windows) — invisible on x64
+# (no cdecl/stdcall ABI distinction there) but a real `LNK2019 unresolved external symbol`
+# (wrong name decoration) when building for i686 (32-bit Windows). Patched both crates to
+# `extern "system"` (Rust's standard stdcall-on-x86/cdecl-elsewhere idiom) — see LICENSES.md.
+# unrar/unrar_sys 0.5.8 (pulled in transitively by unarc-rs for .arj support, see arj_format.rs
+# and the "Known gaps" note in CLAUDE.md) is a separate, older crate pair with the identical
+# calling-convention bug — patched the same way.
+[patch.crates-io]
+unrar-ng-sys = { path = "vendor/unrar-ng-sys" }
+unrar-ng = { path = "vendor/unrar-ng" }
+unrar_sys = { path = "vendor/unrar_sys" }
+unrar = { path = "vendor/unrar" }
