@@ -19,12 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Note: Vietzip's own source code (this repository) is MIT-licensed as stated
-above. It links against a small number of third-party components under their
-own separate license terms — most notably the UnRAR source code (used
-read-only, for .rar extraction, never for creating .rar files), which is
-distributed under RARLAB's own license, not MIT. See LICENSES.md for the
-full list of third-party components and their terms.
