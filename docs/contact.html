@@ -7,8 +7,9 @@
 <meta name="description" content="Báo lỗi, góp ý, hoặc đặt câu hỏi về Vietzip qua GitHub Issues.">
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/style.css">
+<script>(function(){var t=localStorage.getItem("vietzip-site-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 </head>
-<body>
+<body data-page="contact">
 
 <header class="site-header">
   <div class="container">
@@ -17,10 +18,15 @@
       Vietzip
     </a>
     <nav class="site-nav">
-      <a href="index.html">Trang chủ</a>
-      <a href="github.html">GitHub</a>
-      <a href="about.html">Giới thiệu</a>
-      <a href="contact.html" class="active">Liên hệ</a>
+      <a href="index.html" data-i18n="nav_home">Trang chủ</a>
+      <a href="github.html" data-i18n="nav_github">GitHub</a>
+      <a href="about.html" data-i18n="nav_about">Giới thiệu</a>
+      <a href="contact.html" class="active" data-i18n="nav_contact">Liên hệ</a>
+      <span class="lang-switch">
+        <button class="lang-btn" data-lang="vi">VI</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </span>
+      <button class="theme-btn" aria-label="Chuyển giao diện sáng/tối">🌙</button>
     </nav>
   </div>
 </header>
@@ -29,23 +35,23 @@
   <div class="container">
 
     <section class="hero">
-      <h1>Liên hệ</h1>
-      <p class="tagline">Cách nhanh nhất để báo lỗi, đề xuất tính năng, hoặc đặt câu hỏi là qua GitHub Issues —
+      <h1 data-i18n="contact_h1">Liên hệ</h1>
+      <p class="tagline" data-i18n="contact_tagline">Cách nhanh nhất để báo lỗi, đề xuất tính năng, hoặc đặt câu hỏi là qua GitHub Issues —
         mọi trao đổi đều công khai, giúp người dùng khác gặp vấn đề tương tự cũng tìm thấy câu trả lời.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/l-lawliet-94/vietzip/issues/new">✉ Tạo Issue mới</a>
-        <a class="btn btn-secondary" href="https://github.com/l-lawliet-94/vietzip/issues">Xem Issues hiện có</a>
+        <a class="btn btn-primary" href="https://github.com/l-lawliet-94/vietzip/issues/new" data-i18n="contact_cta_new">✉ Tạo Issue mới</a>
+        <a class="btn btn-secondary" href="https://github.com/l-lawliet-94/vietzip/issues" data-i18n="contact_cta_view">Xem Issues hiện có</a>
       </div>
     </section>
 
     <section>
-      <h2>Trước khi tạo Issue mới</h2>
+      <h2 data-i18n="contact_before_heading">Trước khi tạo Issue mới</h2>
       <div class="card">
-        <p>Giúp xử lý nhanh hơn bằng cách kèm theo:</p>
+        <p data-i18n="contact_before_p">Giúp xử lý nhanh hơn bằng cách kèm theo:</p>
         <ul>
-          <li>Hệ điều hành và phiên bản Vietzip đang dùng.</li>
-          <li>Các bước tái hiện lỗi, nếu là báo lỗi.</li>
-          <li>Kiểm tra nhanh <a href="https://github.com/l-lawliet-94/vietzip/issues">danh sách Issues hiện có</a> xem vấn đề đã có ai báo chưa.</li>
+          <li data-i18n="contact_li1">Hệ điều hành và phiên bản Vietzip đang dùng.</li>
+          <li data-i18n="contact_li2">Các bước tái hiện lỗi, nếu là báo lỗi.</li>
+          <li><span data-i18n="contact_li3_prefix">Kiểm tra nhanh</span> <a href="https://github.com/l-lawliet-94/vietzip/issues" data-i18n="contact_issues_link_text">danh sách Issues hiện có</a> <span data-i18n="contact_li3_suffix">xem vấn đề đã có ai báo chưa.</span></li>
         </ul>
       </div>
     </section>
@@ -55,9 +61,11 @@
 
 <footer class="site-footer">
   <div class="container">
-    <p>Vietzip — mã nguồn mở theo giấy phép MIT. <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
+    <p><span data-i18n="footer_text">Vietzip — mã nguồn mở theo giấy phép MIT.</span> <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
   </div>
 </footer>
 
+<script src="assets/theme.js"></script>
+<script src="assets/i18n.js"></script>
 </body>
 </html>

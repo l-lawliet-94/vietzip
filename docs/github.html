@@ -7,8 +7,9 @@
 <meta name="description" content="Mã nguồn, phiên bản tải về, và cách đóng góp cho dự án Vietzip trên GitHub.">
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/style.css">
+<script>(function(){var t=localStorage.getItem("vietzip-site-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 </head>
-<body>
+<body data-page="github">
 
 <header class="site-header">
   <div class="container">
@@ -17,10 +18,15 @@
       Vietzip
     </a>
     <nav class="site-nav">
-      <a href="index.html">Trang chủ</a>
-      <a href="github.html" class="active">GitHub</a>
-      <a href="about.html">Giới thiệu</a>
-      <a href="contact.html">Liên hệ</a>
+      <a href="index.html" data-i18n="nav_home">Trang chủ</a>
+      <a href="github.html" class="active" data-i18n="nav_github">GitHub</a>
+      <a href="about.html" data-i18n="nav_about">Giới thiệu</a>
+      <a href="contact.html" data-i18n="nav_contact">Liên hệ</a>
+      <span class="lang-switch">
+        <button class="lang-btn" data-lang="vi">VI</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </span>
+      <button class="theme-btn" aria-label="Chuyển giao diện sáng/tối">🌙</button>
     </nav>
   </div>
 </header>
@@ -29,44 +35,47 @@
   <div class="container">
 
     <section class="hero">
-      <h1>Vietzip trên GitHub</h1>
-      <p class="tagline">Toàn bộ mã nguồn, lịch sử phát triển, và các bản phát hành đều công khai trên GitHub.</p>
+      <h1 data-i18n="github_h1">Vietzip trên GitHub</h1>
+      <p class="tagline" data-i18n="github_tagline">Toàn bộ mã nguồn, lịch sử phát triển, và các bản phát hành đều công khai trên GitHub.</p>
       <p class="badges">
         <img src="https://img.shields.io/github/license/l-lawliet-94/vietzip" alt="License">
         <img src="https://img.shields.io/github/stars/l-lawliet-94/vietzip" alt="Stars">
         <img src="https://img.shields.io/github/actions/workflow/status/l-lawliet-94/vietzip/build-macos.yml?label=build%20macOS" alt="Build macOS status">
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/l-lawliet-94/vietzip">⭐ Xem repo trên GitHub</a>
+        <a class="btn btn-primary" href="https://github.com/l-lawliet-94/vietzip" data-i18n="github_cta">⭐ Xem repo trên GitHub</a>
       </div>
     </section>
 
     <section>
-      <h2>Đường dẫn nhanh</h2>
+      <h2 data-i18n="github_links_heading">Đường dẫn nhanh</h2>
       <div class="grid">
         <div class="feature">
-          <h3>Mã nguồn</h3>
-          <p><a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a> — Rust (core engine + CLI) và Tauri (ứng dụng desktop).</p>
+          <h3 data-i18n="github_card1_h">Mã nguồn</h3>
+          <p><a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a> <span data-i18n="github_card1_p_prefix">— Rust (core engine + CLI) và Tauri (ứng dụng desktop).</span></p>
         </div>
         <div class="feature">
-          <h3>Tải bản cài đặt</h3>
-          <p><a href="https://github.com/l-lawliet-94/vietzip/releases">GitHub Releases</a> — nơi đăng các file cài đặt chính thức cho từng nền tảng.</p>
+          <h3 data-i18n="github_card2_h">Tải bản cài đặt</h3>
+          <p><a href="https://github.com/l-lawliet-94/vietzip/releases">GitHub Releases</a> <span data-i18n="github_card2_p_prefix">— nơi đăng các file cài đặt chính thức cho từng nền tảng.</span></p>
         </div>
         <div class="feature">
-          <h3>Báo lỗi / góp ý</h3>
-          <p><a href="https://github.com/l-lawliet-94/vietzip/issues">GitHub Issues</a> — báo lỗi, đề xuất tính năng, hoặc đặt câu hỏi.</p>
+          <h3 data-i18n="github_card3_h">Báo lỗi / góp ý</h3>
+          <p><a href="https://github.com/l-lawliet-94/vietzip/issues">GitHub Issues</a> <span data-i18n="github_card3_p_prefix">— báo lỗi, đề xuất tính năng, hoặc đặt câu hỏi.</span></p>
         </div>
         <div class="feature">
-          <h3>Build tự động</h3>
-          <p><a href="https://github.com/l-lawliet-94/vietzip/actions">GitHub Actions</a> — mỗi bản build macOS được biên dịch tự động trên phần cứng Apple thật.</p>
+          <h3 data-i18n="github_card4_h">Build tự động</h3>
+          <p><a href="https://github.com/l-lawliet-94/vietzip/actions">GitHub Actions</a> <span data-i18n="github_card4_p_prefix">— mỗi bản build macOS được biên dịch tự động trên phần cứng Apple thật.</span></p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>Tự build từ mã nguồn</h2>
+      <h2 data-i18n="github_build_heading">Tự build từ mã nguồn</h2>
       <div class="card">
-        <p>Hướng dẫn build và sử dụng chi tiết (song ngữ Việt/Anh) nằm ngay trong <a href="https://github.com/l-lawliet-94/vietzip#readme">README của repo</a>. Tóm tắt:</p>
+        <p>
+          <span data-i18n="github_build_p_prefix">Hướng dẫn build và sử dụng chi tiết (song ngữ Việt/Anh) nằm ngay trong</span>
+          <a href="https://github.com/l-lawliet-94/vietzip#readme" data-i18n="github_readme_link_text">README của repo</a><span data-i18n="github_build_p_suffix">. Tóm tắt:</span>
+        </p>
         <pre><code>cargo build --release -p vietzip   # core engine + CLI
 cd apps/desktop &amp;&amp; npm install &amp;&amp; npm run tauri build   # ứng dụng desktop</code></pre>
       </div>
@@ -77,9 +86,11 @@ cd apps/desktop &amp;&amp; npm install &amp;&amp; npm run tauri build   # ứng 
 
 <footer class="site-footer">
   <div class="container">
-    <p>Vietzip — mã nguồn mở theo giấy phép MIT. <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
+    <p><span data-i18n="footer_text">Vietzip — mã nguồn mở theo giấy phép MIT.</span> <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
   </div>
 </footer>
 
+<script src="assets/theme.js"></script>
+<script src="assets/i18n.js"></script>
 </body>
 </html>

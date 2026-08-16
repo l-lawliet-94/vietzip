@@ -7,8 +7,9 @@
 <meta name="description" content="Vietzip: thay thế miễn phí, mã nguồn mở cho WinRAR/7-Zip. Nén/giải nén .zip, .7z, .rar và hàng chục định dạng khác trên Windows, Linux, macOS.">
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/style.css">
+<script>(function(){var t=localStorage.getItem("vietzip-site-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 </head>
-<body>
+<body data-page="home">
 
 <header class="site-header">
   <div class="container">
@@ -17,10 +18,15 @@
       Vietzip
     </a>
     <nav class="site-nav">
-      <a href="index.html" class="active">Trang chủ</a>
-      <a href="github.html">GitHub</a>
-      <a href="about.html">Giới thiệu</a>
-      <a href="contact.html">Liên hệ</a>
+      <a href="index.html" class="active" data-i18n="nav_home">Trang chủ</a>
+      <a href="github.html" data-i18n="nav_github">GitHub</a>
+      <a href="about.html" data-i18n="nav_about">Giới thiệu</a>
+      <a href="contact.html" data-i18n="nav_contact">Liên hệ</a>
+      <span class="lang-switch">
+        <button class="lang-btn" data-lang="vi">VI</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </span>
+      <button class="theme-btn" aria-label="Chuyển giao diện sáng/tối">🌙</button>
     </nav>
   </div>
 </header>
@@ -31,54 +37,54 @@
     <section class="hero">
       <img class="logo" src="assets/logo.png" alt="Vietzip logo">
       <h1>Vietzip</h1>
-      <p class="tagline">Công cụ nén/giải nén miễn phí, mã nguồn mở — thay thế cho WinRAR/7-Zip.
+      <p class="tagline" data-i18n="home_hero_tagline">Công cụ nén/giải nén miễn phí, mã nguồn mở — thay thế cho WinRAR/7-Zip.
         Hỗ trợ hàng chục định dạng, mật khẩu AES-256, và tích hợp trực tiếp vào Explorer/Nautilus.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/l-lawliet-94/vietzip/releases">⬇ Tải xuống</a>
-        <a class="btn btn-secondary" href="github.html">Xem mã nguồn</a>
+        <a class="btn btn-primary" href="https://github.com/l-lawliet-94/vietzip/releases" data-i18n="home_cta_download">⬇ Tải xuống</a>
+        <a class="btn btn-secondary" href="github.html" data-i18n="home_cta_source">Xem mã nguồn</a>
       </div>
     </section>
 
     <section>
-      <h2>Nền tảng hỗ trợ</h2>
+      <h2 data-i18n="home_platforms_heading">Nền tảng hỗ trợ</h2>
       <div class="card">
         <table>
-          <tr><th>Nền tảng</th><th>Trạng thái</th></tr>
-          <tr><td>Windows (64-bit)</td><td>✅ MSI + NSIS, đã build và kiểm thử</td></tr>
-          <tr><td>Windows (32-bit)</td><td>✅ MSI + NSIS, đã build và kiểm thử</td></tr>
-          <tr><td>Linux (Ubuntu và tương đương)</td><td>✅ .deb / .rpm / AppImage, đã build và kiểm thử</td></tr>
-          <tr><td>macOS</td><td>✅ DMG, build tự động qua GitHub Actions</td></tr>
-          <tr><td>Android</td><td>🚧 Đang phát triển</td></tr>
+          <tr><th data-i18n="home_th_platform">Nền tảng</th><th data-i18n="home_th_status">Trạng thái</th></tr>
+          <tr><td data-i18n="home_platform_win64">Windows (64-bit)</td><td data-i18n="home_status_win64">✅ MSI + NSIS, đã build và kiểm thử</td></tr>
+          <tr><td data-i18n="home_platform_win32">Windows (32-bit)</td><td data-i18n="home_status_win32">✅ MSI + NSIS, đã build và kiểm thử</td></tr>
+          <tr><td data-i18n="home_platform_linux">Linux (Ubuntu và tương đương)</td><td data-i18n="home_status_linux">✅ .deb / .rpm / AppImage, đã build và kiểm thử</td></tr>
+          <tr><td data-i18n="home_platform_macos">macOS</td><td data-i18n="home_status_macos">✅ DMG, build tự động qua GitHub Actions</td></tr>
+          <tr><td data-i18n="home_platform_android">Android</td><td data-i18n="home_status_android">🚧 Đang phát triển</td></tr>
         </table>
       </div>
     </section>
 
     <section>
-      <h2>Tính năng nổi bật</h2>
+      <h2 data-i18n="home_features_heading">Tính năng nổi bật</h2>
       <div class="grid">
         <div class="feature">
-          <h3>Nhiều định dạng</h3>
-          <p>Nén .zip/.7z; giải nén thêm .rar, .tar và các biến thể, .cab, .cpio, .deb, .rpm, .lzh, .ext2-4, .arj, NSIS, .chm, .udf.</p>
+          <h3 data-i18n="home_feat1_h">Nhiều định dạng</h3>
+          <p data-i18n="home_feat1_p">Nén .zip/.7z; giải nén thêm .rar, .tar và các biến thể, .cab, .cpio, .deb, .rpm, .lzh, .ext2-4, .arj, NSIS, .chm, .udf.</p>
         </div>
         <div class="feature">
-          <h3>Mật khẩu AES-256</h3>
-          <p>Mã hóa AES-256 cho cả .zip lẫn .7z, kèm ẩn luôn danh sách tên file khi nén .7z có mật khẩu.</p>
+          <h3 data-i18n="home_feat2_h">Mật khẩu AES-256</h3>
+          <p data-i18n="home_feat2_p">Mã hóa AES-256 cho cả .zip lẫn .7z, kèm ẩn luôn danh sách tên file khi nén .7z có mật khẩu.</p>
         </div>
         <div class="feature">
-          <h3>Tích hợp Explorer/Nautilus</h3>
-          <p>Menu chuột phải "Nén thành .zip", "Giải nén tại đây", cùng menu ngữ cảnh đầy đủ trên Windows.</p>
+          <h3 data-i18n="home_feat3_h">Tích hợp Explorer/Nautilus</h3>
+          <p data-i18n="home_feat3_p">Menu chuột phải "Nén thành .zip", "Giải nén tại đây", cùng menu ngữ cảnh đầy đủ trên Windows.</p>
         </div>
         <div class="feature">
-          <h3>File tự giải nén (SFX)</h3>
-          <p>Tạo file .exe tự giải nén, có thể tự chạy 1 chương trình khác ngay sau khi giải nén xong.</p>
+          <h3 data-i18n="home_feat4_h">File tự giải nén (SFX)</h3>
+          <p data-i18n="home_feat4_p">Tạo file .exe tự giải nén, có thể tự chạy 1 chương trình khác ngay sau khi giải nén xong.</p>
         </div>
         <div class="feature">
-          <h3>Sửa file nén bị lỗi</h3>
-          <p>Phục hồi dữ liệu từ file .zip bị hỏng central directory, cùng công cụ kiểm tra toàn vẹn/checksum.</p>
+          <h3 data-i18n="home_feat5_h">Sửa file nén bị lỗi</h3>
+          <p data-i18n="home_feat5_p">Phục hồi dữ liệu từ file .zip bị hỏng central directory, cùng công cụ kiểm tra toàn vẹn/checksum.</p>
         </div>
         <div class="feature">
-          <h3>Song ngữ Việt/Anh</h3>
-          <p>Giao diện tự nhận diện ngôn ngữ hệ thống, chuyển đổi thủ công bất kỳ lúc nào.</p>
+          <h3 data-i18n="home_feat6_h">Song ngữ Việt/Anh</h3>
+          <p data-i18n="home_feat6_p">Giao diện tự nhận diện ngôn ngữ hệ thống, chuyển đổi thủ công bất kỳ lúc nào.</p>
         </div>
       </div>
     </section>
@@ -88,9 +94,11 @@
 
 <footer class="site-footer">
   <div class="container">
-    <p>Vietzip — mã nguồn mở theo giấy phép MIT. <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
+    <p><span data-i18n="footer_text">Vietzip — mã nguồn mở theo giấy phép MIT.</span> <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
   </div>
 </footer>
 
+<script src="assets/theme.js"></script>
+<script src="assets/i18n.js"></script>
 </body>
 </html>

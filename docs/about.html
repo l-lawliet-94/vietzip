@@ -7,8 +7,9 @@
 <meta name="description" content="Vietzip là gì, hỗ trợ những định dạng nào, dùng công nghệ gì, và giấy phép ra sao.">
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/style.css">
+<script>(function(){var t=localStorage.getItem("vietzip-site-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 </head>
-<body>
+<body data-page="about">
 
 <header class="site-header">
   <div class="container">
@@ -17,10 +18,15 @@
       Vietzip
     </a>
     <nav class="site-nav">
-      <a href="index.html">Trang chủ</a>
-      <a href="github.html">GitHub</a>
-      <a href="about.html" class="active">Giới thiệu</a>
-      <a href="contact.html">Liên hệ</a>
+      <a href="index.html" data-i18n="nav_home">Trang chủ</a>
+      <a href="github.html" data-i18n="nav_github">GitHub</a>
+      <a href="about.html" class="active" data-i18n="nav_about">Giới thiệu</a>
+      <a href="contact.html" data-i18n="nav_contact">Liên hệ</a>
+      <span class="lang-switch">
+        <button class="lang-btn" data-lang="vi">VI</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </span>
+      <button class="theme-btn" aria-label="Chuyển giao diện sáng/tối">🌙</button>
     </nav>
   </div>
 </header>
@@ -29,47 +35,47 @@
   <div class="container">
 
     <section class="hero" style="padding-bottom: 24px;">
-      <h1>Giới thiệu</h1>
-      <p class="tagline">Vietzip là công cụ nén/giải nén miễn phí, mã nguồn mở, hướng tới người dùng Việt Nam —
+      <h1 data-i18n="about_h1">Giới thiệu</h1>
+      <p class="tagline" data-i18n="about_tagline">Vietzip là công cụ nén/giải nén miễn phí, mã nguồn mở, hướng tới người dùng Việt Nam —
         thay thế cho các phần mềm thương mại như WinRAR.</p>
     </section>
 
     <section>
-      <h2>Định dạng hỗ trợ</h2>
+      <h2 data-i18n="about_formats_heading">Định dạng hỗ trợ</h2>
       <div class="card">
-        <p><strong>Nén:</strong> <code>.zip</code>, <code>.7z</code> (cả 2 hỗ trợ mật khẩu AES-256), cộng nén file đơn <code>.gz</code>/<code>.bz2</code>/<code>.zst</code>/<code>.xz</code>.</p>
-        <p><strong>Giải nén:</strong> tất cả định dạng trên, cộng thêm <code>.rar</code> (chỉ đọc), <code>.tar</code> và các biến thể nén,
+        <p><strong data-i18n="about_formats_compress">Nén:</strong> <span data-i18n="about_formats_compress_text"><code>.zip</code>, <code>.7z</code> (cả 2 hỗ trợ mật khẩu AES-256), cộng nén file đơn <code>.gz</code>/<code>.bz2</code>/<code>.zst</code>/<code>.xz</code>.</span></p>
+        <p><strong data-i18n="about_formats_extract">Giải nén:</strong> <span data-i18n="about_formats_extract_text">tất cả định dạng trên, cộng thêm <code>.rar</code> (chỉ đọc), <code>.tar</code> và các biến thể nén,
           <code>.cab</code>, <code>.cpio</code>, <code>.deb</code>, <code>.rpm</code>, <code>.lzh</code>/<code>.lha</code>,
-          <code>.ext2</code>/<code>.ext3</code>/<code>.ext4</code>, <code>.arj</code>, installer NSIS <code>.exe</code>, <code>.chm</code>, và <code>.udf</code>.</p>
+          <code>.ext2</code>/<code>.ext3</code>/<code>.ext4</code>, <code>.arj</code>, installer NSIS <code>.exe</code>, <code>.chm</code>, và <code>.udf</code>.</span></p>
       </div>
     </section>
 
     <section>
-      <h2>Công nghệ</h2>
+      <h2 data-i18n="about_tech_heading">Công nghệ</h2>
       <div class="grid">
         <div class="feature">
-          <h3>Core engine</h3>
-          <p>Viết bằng Rust — an toàn bộ nhớ, hiệu năng cao, dùng chung cho CLI và ứng dụng desktop.</p>
+          <h3 data-i18n="about_tech1_h">Core engine</h3>
+          <p data-i18n="about_tech1_p">Viết bằng Rust — an toàn bộ nhớ, hiệu năng cao, dùng chung cho CLI và ứng dụng desktop.</p>
         </div>
         <div class="feature">
-          <h3>Ứng dụng desktop</h3>
-          <p>Xây dựng trên <a href="https://tauri.app/">Tauri</a> — nhẹ, dùng WebView có sẵn của hệ điều hành thay vì đóng gói cả trình duyệt.</p>
+          <h3 data-i18n="about_tech2_h">Ứng dụng desktop</h3>
+          <p><span data-i18n="about_tech2_p_prefix">Xây dựng trên</span> <a href="https://tauri.app/">Tauri</a> <span data-i18n="about_tech2_p_suffix">— nhẹ, dùng WebView có sẵn của hệ điều hành thay vì đóng gói cả trình duyệt.</span></p>
         </div>
         <div class="feature">
-          <h3>Đa nền tảng</h3>
-          <p>Cùng 1 core engine chạy trên Windows, Linux, macOS — và Android đang trong quá trình phát triển.</p>
+          <h3 data-i18n="about_tech3_h">Đa nền tảng</h3>
+          <p data-i18n="about_tech3_p">Cùng 1 core engine chạy trên Windows, Linux, macOS — và Android đang trong quá trình phát triển.</p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>Giấy phép</h2>
+      <h2 data-i18n="about_license_heading">Giấy phép</h2>
       <div class="card">
-        <p>Mã nguồn Vietzip cấp phép theo <strong>MIT License</strong> — miễn phí sử dụng, sửa đổi, phân phối lại.</p>
-        <p>Một thành phần duy nhất mang điều kiện riêng: phần đọc file <code>.rar</code> dùng mã nguồn UnRAR của RARLAB
+        <p><span data-i18n="about_license_p1_prefix">Mã nguồn Vietzip cấp phép theo</span> <strong>MIT License</strong><span data-i18n="about_license_p1_suffix"> — miễn phí sử dụng, sửa đổi, phân phối lại.</span></p>
+        <p><span data-i18n="about_license_p2">Một thành phần duy nhất mang điều kiện riêng: phần đọc file <code>.rar</code> dùng mã nguồn UnRAR của RARLAB
           (chỉ giải nén, không bao giờ tạo file <code>.rar</code>), theo giấy phép riêng của RARLAB — được phép dùng miễn phí
-          cho mục đích giải nén. Chi tiết đầy đủ trong
-          <a href="https://github.com/l-lawliet-94/vietzip/blob/master/LICENSES.md">LICENSES.md</a> trên repo.</p>
+          cho mục đích giải nén. Chi tiết đầy đủ trong</span>
+          <a href="https://github.com/l-lawliet-94/vietzip/blob/master/LICENSES.md">LICENSES.md</a><span data-i18n="about_license_p2_suffix"> trên repo.</span></p>
       </div>
     </section>
 
@@ -78,9 +84,11 @@
 
 <footer class="site-footer">
   <div class="container">
-    <p>Vietzip — mã nguồn mở theo giấy phép MIT. <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
+    <p><span data-i18n="footer_text">Vietzip — mã nguồn mở theo giấy phép MIT.</span> <a href="https://github.com/l-lawliet-94/vietzip">github.com/l-lawliet-94/vietzip</a></p>
   </div>
 </footer>
 
+<script src="assets/theme.js"></script>
+<script src="assets/i18n.js"></script>
 </body>
 </html>

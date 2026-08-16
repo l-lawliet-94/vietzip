@@ -81,6 +81,56 @@ nav.site-nav a.active {
   background-color: rgba(57, 108, 216, 0.1);
 }
 
+.lang-switch {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid var(--card-border);
+}
+
+.lang-btn {
+  border: 1px solid var(--card-border);
+  background-color: transparent;
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.lang-btn:hover {
+  opacity: 0.85;
+}
+
+.lang-btn.active {
+  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.theme-btn {
+  border: 1px solid var(--card-border);
+  background-color: transparent;
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 1em;
+  line-height: 1;
+  cursor: pointer;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn:hover {
+  border-color: var(--accent);
+}
+
 main {
   padding: 48px 0 64px;
 }
@@ -233,15 +283,29 @@ footer.site-footer a {
   color: var(--muted);
 }
 
+/* Theme: light is the :root default above. Dark applies either automatically
+   (OS preference, unless the user explicitly chose light) or explicitly via
+   data-theme="dark" set by the toggle button (see theme.js). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #202127;
     --card-bg: #2a2a2e;
     --card-border: rgba(255, 255, 255, 0.1);
     --text: #f6f6f6;
     --muted: rgba(255, 255, 255, 0.6);
   }
-  code {
+  :root:not([data-theme="light"]) code {
     background-color: rgba(255, 255, 255, 0.08);
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: #202127;
+  --card-bg: #2a2a2e;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #f6f6f6;
+  --muted: rgba(255, 255, 255, 0.6);
+}
+:root[data-theme="dark"] code {
+  background-color: rgba(255, 255, 255, 0.08);
 }
