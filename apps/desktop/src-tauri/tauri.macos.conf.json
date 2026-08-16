@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "resources": {
+      "../../../target/release/vietzip.*": null,
+      "../../../target/release/sfx-stub.*": null,
+      "../../../target/release/vietzip_shell_menu.*": null,
+      "../../../target/release/vietzip": "",
+      "../../../target/release/sfx-stub": ""
+    }
+  }
+}

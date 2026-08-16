@@ -1,3 +1,13 @@
 /target
 .DS_Store
 Thumbs.db
+
+# Built installers don't belong in git history — distribute via GitHub Releases instead.
+# (This also covers stray copies that sometimes end up at the repo root during manual testing.)
+*.msi
+*.deb
+*.rpm
+*.AppImage
+*.dmg
+node_modules/
+dist/

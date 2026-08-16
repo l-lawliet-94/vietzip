@@ -1,0 +1,49 @@
+name: Build macOS
+
+# Runs on a real Apple-hardware GitHub-hosted runner (macos-latest) — this
+# project has no Mac available locally, so this workflow is the actual macOS
+# build/verification environment. See CLAUDE.md's "Status by platform" for
+# context: macOS is next in the platform priority order and was blocked on
+# not having real Apple hardware until this workflow existed.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run core engine tests
+        run: cargo test --release -p vietzip_core
+
+      - name: Install frontend dependencies
+        working-directory: apps/desktop
+        run: npm install
+
+      - name: Build macOS bundle
+        working-directory: apps/desktop
+        run: npm run tauri build
+
+      - name: Upload DMG/app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: vietzip-macos
+          path: |
+            target/release/bundle/dmg/*.dmg
+            target/release/bundle/macos/*.app
+          if-no-files-found: error
