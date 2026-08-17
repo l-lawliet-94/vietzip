@@ -93,6 +93,42 @@ fn main() {
         .iter()
         .map(|&s| format!("vendor/unrar/{s}.cpp"))
         .collect();
+    // PATCH (vietzip): `cpp_link_stdlib(None)` below (needed to avoid a windows-gnu linking
+    // issue) means NO C++ runtime gets linked on ANY target unless done explicitly here.
+    // Windows/Linux/macOS happen to have the needed RTTI/exception symbols (e.g.
+    // `_ZTISt12length_error`, typeinfo for std::length_error) satisfied some other way at
+    // link/load time, but Android has no system libc++ available to third-party apps —
+    // confirmed by a real `dlopen failed: cannot locate symbol "_ZTISt12length_error"`
+    // crash on a physical device.
+    //
+    // First attempt statically linked the NDK's `libc++_static.a` + `libc++abi.a`, which
+    // fixed that crash but introduced a NEW one, on real-device runtime testing: a
+    // `SIGSEGV` null-pointer dereference right after `dlopen`, inside `getauxval()` calling
+    // `__libc_shared_globals()`. Root-caused via a symbolized native tombstone + disassembly
+    // (not guessed): the crashing code is the NDK's *static* `libc.a`'s own copy of
+    // `bionic/libc/bionic/getauxval.cpp` — which carries its own private, NEVER-initialized
+    // `__libc_shared_globals()` (a function-local static, disconnected from the real one the
+    // actual running process already initialized via the dynamic `libc.so`) — not anything
+    // from libc++_static/libc++abi at all. It got pulled in because THIS build script was
+    // adding an explicit `cargo:rustc-link-search=native=<ndk>/usr/lib/<abi>/` — the exact
+    // directory `libc.a` also lives in — which apparently let the linker resolve the
+    // implicit `-lc` reference against the static archive instead of the intended dynamic
+    // `libc.so`. Switched to the NDK-recommended dynamic `libc++_shared.so` for the C++
+    // runtime itself (avoids needing `-lc++_static`/`-lc++abi` at all, so rustc's eager
+    // static-lib compile-time existence check — the ONLY reason this extra `-L` was ever
+    // added — no longer applies) and dropped the `-L` entirely; the external linker's own
+    // default NDK sysroot search already resolves `-lc++_shared` correctly without it,
+    // exactly the same way it already resolves `-lc`/`-lm`/`-llog` without any extra `-L`.
+    // Since Android has no system-provided `libc++_shared.so` for 3rd-party apps, it must
+    // still be bundled into the APK ourselves (see `bundle_libcxx_shared_for_gradle()`).
+    if target_os == "android" {
+        println!("cargo:rustc-link-lib=c++_shared");
+        // Still need the NDK's per-ABI sysroot lib dir to locate `libc++_shared.so` to copy
+        // (see `bundle_libcxx_shared_for_gradle` below) — just not as a linker `-L` flag.
+        if let Some(dir) = android_libcxx_static_dir() {
+            bundle_libcxx_shared_for_gradle(&dir);
+        }
+    }
     let mut build = cc::Build::new();
     build
         .cpp(true) // Switch to C++ library compilation.
@@ -155,4 +191,64 @@ fn main() {
     }
 
     build.files(&files).compile("libunrar.a");
+}
+
+/// PATCH (vietzip): locate the Android NDK's per-ABI `usr/lib/<abi>` sysroot directory
+/// (where `libc++_static.a` lives) from the `CXX_<target-triple>` env var that cargokit's
+/// `AndroidEnvironment.buildEnvironment()` sets for every Android build (confirmed by
+/// reading that env var directly during a real build — path shape is
+/// `<ndk>/toolchains/llvm/prebuilt/<host>/bin/clang++.exe`). Returns `None` (rather than
+/// panicking) if the env var is absent or doesn't parse as expected — e.g. a direct
+/// `cargo build`/`cargo ndk` invocation outside cargokit's Gradle-driven build, which sets
+/// up its own `-L` search differently and doesn't need this.
+// Deliberately NOT gated by `#[cfg(target_os = "android")]` — that would reflect the HOST
+// this build script itself is compiled for (always the dev machine, e.g. Windows), not the
+// Android TARGET being cross-compiled to. Only called when the `CARGO_CFG_TARGET_OS`
+// runtime check at the call site is "android".
+fn android_libcxx_static_dir() -> Option<std::path::PathBuf> {
+    let target = std::env::var("TARGET").ok()?;
+    let cxx = std::env::var(format!("CXX_{target}")).ok()?;
+    let toolchain_root = std::path::Path::new(&cxx).parent()?.parent()?; // bin/.. -> <host-arch>/
+    let abi_dir = match target.as_str() {
+        "armv7-linux-androideabi" => "arm-linux-androideabi",
+        other => other, // aarch64/i686/x86_64-linux-android match their NDK dir name as-is
+    };
+    Some(
+        toolchain_root
+            .join("sysroot")
+            .join("usr")
+            .join("lib")
+            .join(abi_dir),
+    )
+}
+
+/// PATCH (vietzip): copy the NDK's `libc++_shared.so` into cargokit's own per-build-type
+/// output directory (`$CARGOKIT_OUTPUT_DIR/<android-abi>/`), the same directory cargokit's
+/// `plugin.gradle` already registers as a Gradle `jniLibs.srcDir` for the final APK — so
+/// this rides along on Gradle's existing "package everything found here" mechanism instead
+/// of needing a separate Gradle-level change. `CARGOKIT_OUTPUT_DIR` is set by
+/// `android_environment.dart`'s `CargoKitBuildTask` on the `run_build_tool` process and
+/// flows down to this build script because `Process.runSync` defaults to
+/// `includeParentEnvironment: true` (confirmed by reading cargokit's own
+/// `build_tool/lib/src/util.dart`). Silently does nothing if that env var is absent (e.g. a
+/// direct `cargo build`/`cargo ndk` invocation outside cargokit) or the target isn't one of
+/// the 4 Android ABIs cargokit builds.
+fn bundle_libcxx_shared_for_gradle(ndk_lib_dir: &std::path::Path) {
+    let Ok(target) = std::env::var("TARGET") else {
+        return;
+    };
+    let Ok(output_dir) = std::env::var("CARGOKIT_OUTPUT_DIR") else {
+        return;
+    };
+    let android_abi = match target.as_str() {
+        "aarch64-linux-android" => "arm64-v8a",
+        "armv7-linux-androideabi" => "armeabi-v7a",
+        "x86_64-linux-android" => "x86_64",
+        "i686-linux-android" => "x86",
+        _ => return,
+    };
+    let src = ndk_lib_dir.join("libc++_shared.so");
+    let dest_dir = std::path::Path::new(&output_dir).join(android_abi);
+    let _ = std::fs::create_dir_all(&dest_dir);
+    let _ = std::fs::copy(&src, dest_dir.join("libc++_shared.so"));
 }

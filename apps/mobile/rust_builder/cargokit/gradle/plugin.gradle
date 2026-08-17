@@ -3,6 +3,8 @@
 
 import java.nio.file.Paths
 import org.apache.tools.ant.taskdefs.condition.Os
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
 
 CargoKitPlugin.file = buildscript.sourceFile
 
@@ -13,7 +15,15 @@ class CargoKitExtension {
     String libname; // Library name within Cargo.toml. Must be a cdylib
 }
 
+// Local patch (2026-08-16, not yet fixed upstream in irondash/cargokit as of this check):
+// `Project.exec {}` was removed in Gradle 9 (this project's Gradle wrapper is 9.1.0, needed
+// for AGP 9.0.1) — Gradle's own documented replacement for task-level exec is to inject
+// `ExecOperations` and call `execOperations.exec {}` instead. See the `execOperations.exec`
+// calls in `build()` below (previously `project.exec`).
 abstract class CargoKitBuildTask extends DefaultTask {
+
+    @Inject
+    abstract ExecOperations getExecOperations()
 
     @Input
     String buildMode
@@ -60,12 +70,12 @@ abstract class CargoKitBuildTask extends DefaultTask {
         def rootProjectDir = project.rootProject.projectDir
 
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-            project.exec {
+            execOperations.exec {
                 commandLine 'chmod', '+x', path
             }
         }
 
-        project.exec {
+        execOperations.exec {
             executable path
             args "build-gradle"
             environment "CARGOKIT_ROOT_PROJECT_DIR", rootProjectDir
