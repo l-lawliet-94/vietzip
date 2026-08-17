@@ -96,9 +96,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _onCompress() async {
-    final result = await FilePicker.pickFiles(allowMultiple: true, withData: false);
-    if (result == null || result.files.isEmpty) return;
-    final sources = result.files.map((f) => f.path).whereType<String>().toList();
+    // file_picker 12.x: pickFiles() returns List<PlatformFile> directly (never null,
+    // empty list on cancel) instead of the old FilePickerResult wrapper; allowMultiple
+    // already defaults to true, matching this flow's original intent.
+    final files = await FilePicker.pickFiles();
+    if (files.isEmpty) return;
+    final sources = files.map((f) => f.path).whereType<String>().toList();
     if (sources.isEmpty) return;
 
     await _withProgress(t('status.compressing'), () async {
@@ -109,13 +112,15 @@ class _HomePageState extends State<HomePage> {
         await compressFiles(sources: sources, dest: destPath, password: _password(), level: _level);
 
         final bytes = await File(destPath).readAsBytes();
-        final savedPath = await FilePicker.saveFile(
+        // file_picker 12.x: saveFile() now returns a Uri? (was a String? path before) —
+        // its scheme varies by platform (e.g. content:// via Android SAF).
+        final savedUri = await FilePicker.saveFile(
           dialogTitle: t('export.title'),
           fileName: '$baseName.zip',
           bytes: bytes,
         );
-        if (savedPath != null) {
-          _setStatus(t('status.compressed', {'path': savedPath}), StatusKind.success);
+        if (savedUri != null) {
+          _setStatus(t('status.compressed', {'path': savedUri.toString()}), StatusKind.success);
         } else {
           _setStatus(t('export.skipped'), StatusKind.success);
         }
@@ -126,8 +131,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<String?> _pickArchivePath() async {
-    final result = await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: _archiveExtensions);
-    return result?.files.single.path;
+    // file_picker 12.x: use the new dedicated pickFile() for single-file selection
+    // instead of the now-deprecated pickFiles(allowMultiple: false).
+    final file = await FilePicker.pickFile(type: FileType.custom, allowedExtensions: _archiveExtensions);
+    return file?.path;
   }
 
   Future<void> _extractArchive(String archivePath) async {
